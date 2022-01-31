@@ -2,8 +2,6 @@ package dababy.springsecurityjwtbasic.filter;
 
 import javax.servlet.*;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.logging.LogRecord;
 
 
 public class MyFilter1 implements Filter {
