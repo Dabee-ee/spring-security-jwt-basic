@@ -2,8 +2,10 @@ package dababy.springsecurityjwtbasic.config;
 
 import dababy.springsecurityjwtbasic.filter.MyFilter1;
 import dababy.springsecurityjwtbasic.filter.MyFilter3;
+import dababy.springsecurityjwtbasic.jwt.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -37,6 +39,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .mvcMatchers("/api/v1/admin/**")
                 .access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll();
+
+        http.addFilter(new JwtAuthenticationFilter(authenticationManager())); // 인증을 관리하는 AuthenticationManager을 인자로 보내야 함.
+
     }
 
 
