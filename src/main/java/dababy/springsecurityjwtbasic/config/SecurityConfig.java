@@ -3,6 +3,10 @@ package dababy.springsecurityjwtbasic.config;
 import dababy.springsecurityjwtbasic.filter.MyFilter1;
 import dababy.springsecurityjwtbasic.filter.MyFilter3;
 import dababy.springsecurityjwtbasic.jwt.JwtAuthenticationFilter;
+import dababy.springsecurityjwtbasic.jwt.JwtAuthorizationFilter;
+import dababy.springsecurityjwtbasic.member.entity.Member;
+import dababy.springsecurityjwtbasic.member.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,9 +18,11 @@ import org.springframework.security.web.context.SecurityContextPersistenceFilter
 
 @Configuration
 @EnableWebSecurity // 스프링 시큐리티 필터가 스프링 필터체인에 등록이 됩니다.
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired CorsConfig corsConfig;
+    private final CorsConfig corsConfig;
+    private final MemberRepository memberRepository;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -30,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.formLogin().disable();
         http.httpBasic().disable();
 
+        http.addFilter(new JwtAuthenticationFilter(authenticationManager())); // 인증을 관리하는 AuthenticationManager을 인자로 보내야 함.
+        http.addFilter(new JwtAuthorizationFilter(authenticationManager(), memberRepository)); // 인증을 관리하는 AuthenticationManager을 인자로 보내야 함.
 
         http.authorizeRequests()
                 .mvcMatchers("/api/v1/user/**")
@@ -40,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .access("hasRole('ROLE_ADMIN')")
                 .anyRequest().permitAll();
 
-        http.addFilter(new JwtAuthenticationFilter(authenticationManager())); // 인증을 관리하는 AuthenticationManager을 인자로 보내야 함.
+
 
     }
 

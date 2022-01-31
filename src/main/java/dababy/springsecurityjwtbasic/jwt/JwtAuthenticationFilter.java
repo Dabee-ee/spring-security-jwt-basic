@@ -4,6 +4,7 @@ package dababy.springsecurityjwtbasic.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dababy.springsecurityjwtbasic.config.auth.JwtProperties;
 import dababy.springsecurityjwtbasic.config.auth.PrincipalDetails;
 import dababy.springsecurityjwtbasic.member.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +78,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     // attemptAuthentication 실행 후, 인증이 정상적으로 되었으면 successfulAuthentication 함수가 실행 됨.
-    // 위에서 하지 않고, 여기서 JWT 토큰을 만들어서 request 요청한 사용자에게 JWT 토큰을 응답해주는 것도 가능.
+//     위에서 하지 않고, 여기서 JWT 토큰을 만들어서 request 요청한 사용자에게 JWT 토큰을 응답해주는 것도 가능.
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
@@ -85,12 +86,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
         // Hash 암호 방식
         String jwtToken = JWT.create()
-                .withSubject(principalDetails.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+(60000*10)))
+                .withSubject("cos token")
+                .withExpiresAt(new Date(System.currentTimeMillis()+ JwtProperties.EXPIRATION_TIME))
                 .withClaim("id", principalDetails.getMember().getId())
                 .withClaim("username", principalDetails.getMember().getUsername())
-                .sign(Algorithm.HMAC512("cos"));
+                .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
-        response.addHeader("Authorization", "Bearer " + jwtToken);
+        response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwtToken);
     }
 }

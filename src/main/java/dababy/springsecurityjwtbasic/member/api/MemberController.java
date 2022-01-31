@@ -1,5 +1,6 @@
 package dababy.springsecurityjwtbasic.member.api;
 
+import dababy.springsecurityjwtbasic.config.auth.PrincipalDetails;
 import dababy.springsecurityjwtbasic.member.entity.Member;
 import dababy.springsecurityjwtbasic.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,15 @@ public class MemberController {
 
         return "회원 가입 완료";
     }
+
+    @GetMapping("user")
+    public String user(Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        System.out.println("authentication : " + principal.getUsername());
+        return "user";
+    }
+
+
 
 
 
